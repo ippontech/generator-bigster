@@ -30,7 +30,18 @@ module.exports = generators.Base.extend({
             this.templatePath('_pom.xml'),
             this.destinationPath('pom.xml'),
             { name: this.answers.name }
-
+        );
+        this.fs.copyTpl(
+            this.templatePath('src/main/resources/_log4j.properties'),
+            this.destinationPath('src/main/resources/log4j.properties')
+        );
+        this.fs.copyTpl(
+            this.templatePath('src/main/scala/com/bigster/_Driver.scala'),
+            this.destinationPath('src/main/scala/com/bigster/Driver.scala')
+        );
+       this.fs.copyTpl(
+            this.templatePath('src/main/scala/com/bigster/_Main.scala'),
+            this.destinationPath('src/main/scala/com/bigster/Main.scala')
         );
     }
 });
