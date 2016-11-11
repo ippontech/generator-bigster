@@ -80,6 +80,13 @@
             <version>2.1.2</version>
         </dependency>
 
+        <!-- Command line parsing -->
+        <dependency>
+            <groupId>com.github.scopt</groupId>
+            <artifactId>scopt_${scala.dep.version}</artifactId>
+            <version>3.4.0</version>
+        </dependency>
+
     </dependencies>
 
     <profiles>
