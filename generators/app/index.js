@@ -10,7 +10,7 @@ module.exports = generators.Base.extend({
         this.option('coffee'); // This method adds support for a `--coffee` flag
 
         // This makes `appname` a required argument.
-        this.argument('appname', { type: String, required: true });
+        // this.argument('appname', { type: String, required: true });
     },
 
     prompting: function () {
@@ -27,5 +27,13 @@ module.exports = generators.Base.extend({
             this.log('app name', answers.name);
             this.log('cool feature', answers.cool);
         }.bind(this));
+    },
+
+    writing: function () {
+        this.fs.copyTpl(
+            this.templatePath('_pom.xml'),
+            this.destinationPath('pom.xml'),
+            { title: 'Templating with Yeoman' }
+        );
     }
 });
