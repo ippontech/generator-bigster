@@ -19,13 +19,9 @@ module.exports = generators.Base.extend({
             name    : 'name',
             message : 'Your project name',
             default : this.appname // Default to current folder name
-        }, {
-            type    : 'confirm',
-            name    : 'cool',
-            message : 'Would you like to enable the Cool feature?'
         }]).then(function (answers) {
+            this.answers = answers;
             this.log('app name', answers.name);
-            this.log('cool feature', answers.cool);
         }.bind(this));
     },
 
@@ -33,7 +29,8 @@ module.exports = generators.Base.extend({
         this.fs.copyTpl(
             this.templatePath('_pom.xml'),
             this.destinationPath('pom.xml'),
-            { title: 'Templating with Yeoman' }
+            { name: this.answers.name }
+
         );
     }
 });

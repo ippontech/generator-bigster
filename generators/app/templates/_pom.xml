@@ -3,7 +3,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.bigster</groupId>
-    <artifactId>bigster-sample-spark-scala</artifactId>
+    <artifactId><%= name %></artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <properties>
