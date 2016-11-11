@@ -19,7 +19,24 @@ module.exports = generators.Base.extend({
             name    : 'name',
             message : 'Your project name',
             default : this.appname // Default to current folder name
-        }]).then(function (answers) {
+        },
+        {
+            type    : 'list',
+            name    : 'scalaVersion',
+            message : 'Choose scala version',
+            choices: [
+                {
+                    value: '2.11.8',
+                    name: '2.11.8'
+                },
+                {
+                    value: '2.10.6',
+                    name: '2.10.6'
+                }
+            ],
+            default : '2.11'
+        }
+        ]).then(function (answers) {
             this.answers = answers;
             this.log('app name', answers.name);
         }.bind(this));
@@ -29,7 +46,11 @@ module.exports = generators.Base.extend({
         this.fs.copyTpl(
             this.templatePath('_pom.xml'),
             this.destinationPath('pom.xml'),
-            { name: this.answers.name }
+            {
+                name: this.answers.name,
+                scalaVersion: this.answers.scalaVersion,
+                scalaDepVersion: this.answers.scalaVersion.substring(0, 4)
+            }
         );
         this.fs.copyTpl(
             this.templatePath('src/main/resources/_log4j.properties'),
