@@ -15,54 +15,130 @@ module.exports = generators.Base.extend({
 
     prompting: function () {
         return this.prompt([{
-            type    : 'input',
             name    : 'name',
+            type    : 'input',
             message : 'Your project name',
             default : this.appname // Default to current folder name
-        },
-        {
+        }, {
+            name    : 'language',
             type    : 'list',
+            message : 'Programming language',
+            choices: [
+                {
+                    value: 'scala',
+                    name: 'Scala'
+                },
+                {
+                    value: 'java',
+                    name: 'Java'
+                },
+                {
+                    value: 'kotlin',
+                    name: 'Kotlin'
+                }
+            ],
+            default : 'scala'
+        }, {
             name    : 'scalaVersion',
-            message : 'Choose scala version',
+            type    : 'list',
+            message : 'Scala version',
             choices: [
                 {
                     value: '2.11.8',
-                    name: '2.11.8'
+                    name: '2.11'
                 },
                 {
                     value: '2.10.6',
-                    name: '2.10.6'
+                    name: '2.10'
                 }
             ],
-            default : '2.11'
+            default : '2.11',
+            when: function (answers) {
+                return answers.language == "scala"
+            }
+        }, {
+            name    : 'buildTool',
+            type    : 'list',
+            message : 'Build tool',
+            choices: [
+                {
+                    value: 'maven',
+                    name: 'Maven'
+                },
+                {
+                    value: 'sbt',
+                    name: 'SBT'
+                }
+            ],
+            default : 'maven',
+            when: function (answers) {
+                return answers.language == "scala"
+            }
         }
         ]).then(function (answers) {
             this.answers = answers;
-            this.log('app name', answers.name);
+            if (answers.scalaVersion) {
+                answers.scalaDepVersion = this.answers.scalaVersion.substring(0, 4);
+            }
         }.bind(this));
     },
 
     writing: function () {
-        this.fs.copyTpl(
-            this.templatePath('_pom.xml'),
-            this.destinationPath('pom.xml'),
-            {
-                name: this.answers.name,
-                scalaVersion: this.answers.scalaVersion,
-                scalaDepVersion: this.answers.scalaVersion.substring(0, 4)
-            }
-        );
+        if (this.answers.buildTool == "sbt") {
+            this.fs.copyTpl(
+                this.templatePath('build.sbt'),
+                this.destinationPath('build.sbt'),
+                {
+                    name: this.answers.name,
+                    scalaVersion: this.answers.scalaVersion,
+                    scalaDepVersion: this.answers.scalaDepVersion
+                }
+            );
+        } else {
+            this.fs.copyTpl(
+                this.templatePath('pom.xml'),
+                this.destinationPath('pom.xml'),
+                {
+                    name: this.answers.name,
+                    language: this.answers.language,
+                    scalaVersion: this.answers.scalaVersion,
+                    scalaDepVersion: this.answers.scalaDepVersion
+                }
+            );
+        }
+
         this.fs.copyTpl(
             this.templatePath('src/main/resources/_log4j.properties'),
             this.destinationPath('src/main/resources/log4j.properties')
         );
-        this.fs.copyTpl(
-            this.templatePath('src/main/scala/com/bigster/_Driver.scala'),
-            this.destinationPath('src/main/scala/com/bigster/Driver.scala')
-        );
-       this.fs.copyTpl(
-            this.templatePath('src/main/scala/com/bigster/_Main.scala'),
-            this.destinationPath('src/main/scala/com/bigster/Main.scala')
-        );
+
+        if (this.answers.language == "scala") {
+            this.fs.copyTpl(
+                this.templatePath('src/main/scala/com/bigster/_Driver.scala'),
+                this.destinationPath('src/main/scala/com/bigster/Driver.scala')
+            );
+            this.fs.copyTpl(
+                this.templatePath('src/main/scala/com/bigster/_Main.scala'),
+                this.destinationPath('src/main/scala/com/bigster/Main.scala')
+            );
+        } else if (this.answers.language == "java") {
+            this.fs.copyTpl(
+                this.templatePath('src/main/java/com/bigster/_Driver.java'),
+                this.destinationPath('src/main/java/com/bigster/Driver.java')
+            );
+            this.fs.copyTpl(
+                this.templatePath('src/main/java/com/bigster/_Main.java'),
+                this.destinationPath('src/main/java/com/bigster/Main.java')
+            );
+        } else if (this.answers.language == "kotlin") {
+            this.fs.copyTpl(
+                this.templatePath('src/main/kotlin/com/bigster/_Driver.kt'),
+                this.destinationPath('src/main/kotlin/com/bigster/Driver.kt')
+            );
+            this.fs.copyTpl(
+                this.templatePath('src/main/kotlin/com/bigster/_Main.kt'),
+                this.destinationPath('src/main/kotlin/com/bigster/Main.kt')
+            );
+        }
     }
 });
